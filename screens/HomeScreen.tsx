@@ -1,98 +1,66 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  Text,
+} from "react-native";
 import FeaturedMovie from "../components/FeaturedMovie";
 import MovieList from "../components/MovieList";
+import { useMovies } from "../utils/useMovies";
 
 export default function HomeScreen() {
-  const mockMoviesPortrait = [
-    {
-      id: "1",
-      posters: {
-        portrait: {
-          url: "https://i.imgur.com/FYzI4BR.jpg",
-        },
-      },
-    },
-    {
-      id: "2",
-      posters: {
-        portrait: {
-          url: "https://i.imgur.com/MLzV3KH.jpg",
-        },
-      },
-    },
-    {
-      id: "3",
-      posters: {
-        portrait: {
-          url: "https://i.imgur.com/njxQGeH.jpg",
-        },
-      },
-    },
-  ];
+  const { getSection, loading, error } = useMovies();
 
-  const mockMoviesLandscape = [
-    {
-      id: "a",
-      posters: {
-        landscape: {
-          url: "https://i.imgur.com/JlVhHzj.jpg",
-        },
-      },
-    },
-    {
-      id: "b",
-      posters: {
-        landscape: {
-          url: "https://i.imgur.com/pv92cPo.jpg",
-        },
-      },
-    },
-  ];
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
-  const mockMoviesUpcoming = [
-    {
-      id: "u1",
-      posters: {
-        landscape: {
-          url: "https://i.imgur.com/5zA03s1.jpg",
-        },
-      },
-    },
-    {
-      id: "u2",
-      posters: {
-        landscape: {
-          url: "https://i.imgur.com/4fLUSJt.jpg",
-        },
-      },
-    },
-  ];
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ color: "#fff" }}>Error loading data</Text>
+      </View>
+    );
+  }
+
+  const featured = getSection("you-might-like")?.items[0];
+  const youMightLike = getSection("you-might-like")?.items || [];
+  const myList = getSection("my-list")?.items || [];
+  const upcoming = getSection("upcoming")?.items || [];
 
   return (
     <ScrollView style={styles.container}>
-      <FeaturedMovie
-        title="Generic Movie Title"
-        year="2025"
-        duration="1H 52MIN"
-        rating="PG-13"
-        backgroundUrl=""
-      />
+      {featured && (
+        <FeaturedMovie
+          title={featured.title}
+          year={featured.year}
+          duration={featured.duration}
+          rating={featured.rating}
+          backgroundUrl={featured.posters.landscape?.url || ""}
+        />
+      )}
+
       <View style={styles.listsContainer}>
         <MovieList
           title="You might like"
-          movies={mockMoviesPortrait}
+          movies={youMightLike}
           aspectRatio={4 / 5}
           layout="portrait"
         />
         <MovieList
           title="My List"
-          movies={mockMoviesLandscape}
+          movies={myList}
           aspectRatio={16 / 9}
           layout="landscape"
         />
         <MovieList
           title="Upcoming"
-          movies={mockMoviesUpcoming}
+          movies={upcoming}
           aspectRatio={16 / 9}
           layout="landscape"
         />
@@ -104,6 +72,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: "#000",
   },
   listsContainer: {

@@ -58,12 +58,14 @@ export default function HomeScreen() {
           aspectRatio={16 / 9}
           layout="landscape"
         />
-        <MovieList
-          title="Upcoming"
-          movies={upcoming}
-          aspectRatio={16 / 9}
-          layout="landscape"
-        />
+        {upcoming.length > 0 && (
+          <MovieList
+            title="Upcoming"
+            movies={upcoming}
+            aspectRatio={16 / 9}
+            layout="landscape"
+          />
+        )}
       </View>
     </ScrollView>
   );
